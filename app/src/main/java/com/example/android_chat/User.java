@@ -1,10 +1,19 @@
 package com.example.android_chat;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Serializable {
     private String name;
-    private long phone;
+    private String phone;
+    private List<User> contactsList = new ArrayList<User>();
+
+    public User(String name, String phone) {
+        this.name = name;
+        this.phone = phone;
+    }
 
     public String getName() {
         return name;
@@ -14,11 +23,15 @@ public class User implements Serializable {
         this.name = name;
     }
 
-    public long getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(long phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public List<User> getContactsList() {
+        return contactsList;
     }
 }

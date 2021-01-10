@@ -5,9 +5,10 @@ public class Message {
     private String message;
     private boolean isSelf;
 
-    public Message(String message, String name) {
-        this.message = message;
+    public Message(String name, String message, boolean isSelf) {
         this.name = name;
+        this.message = message;
+        this.isSelf = isSelf;
     }
 
     public String getName() {
