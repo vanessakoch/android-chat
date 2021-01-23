@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.rabbitmq.client.AMQP;
@@ -29,16 +30,15 @@ import java.util.List;
 public class ChatActivity extends Activity {
     private static String QUEUE_NAME = null;
     private static String EXCHANGE_NAME = null;
-    private Button btnSend;
+    private ImageButton btnSend;
     private EditText inputMsg;
     private ListView listView;
-    private ArrayList<Message> messageList;
-    private List<User> group;
     private ChatAdapter adapter;
     private ConnectionFactory factory;
     private User currentUser, contact;
     private int position;
     private boolean isGroup;
+    private List<Message> messageList = new ArrayList<Message>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +46,8 @@ public class ChatActivity extends Activity {
         setContentView(R.layout.activity_chat);
 
         listView = (ListView) findViewById(R.id.list_view);
-        btnSend = (Button) findViewById(R.id.btnSend);
+        btnSend = (ImageButton) findViewById(R.id.btnSend);
         inputMsg = (EditText) findViewById(R.id.inputMsg);
-
-        messageList = new ArrayList<Message>();
-        adapter = new ChatAdapter(this, messageList);
-        listView.setAdapter(adapter);
 
         Bundle extras = getIntent().getExtras();
         currentUser = (User) extras.getSerializable("user");
@@ -66,6 +62,9 @@ public class ChatActivity extends Activity {
             EXCHANGE_NAME = currentUser.getGroupList().get(position).name;
         }
 
+        adapter = new ChatAdapter(this, messageList, currentUser);
+        listView.setAdapter(adapter);
+
         try {
             initFactory();
         } catch (NoSuchAlgorithmException e) {
@@ -77,7 +76,6 @@ public class ChatActivity extends Activity {
         }
         startThreads();
     }
-
 
     private void startThreads() {
         btnSend.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +127,7 @@ public class ChatActivity extends Activity {
                 @Override
                 public void run() {
                     playBeep();
-                    messageList.add(new Message(currentUser.getName(), message, true));
+                    messageList.add(new Message(currentUser, message));
                     adapter.notifyDataSetChanged();
                     inputMsg.setText("");
                 }

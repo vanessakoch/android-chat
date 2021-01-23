@@ -14,10 +14,12 @@ public class ChatAdapter extends BaseAdapter {
 
     private Context context;
     private List<Message> messageList;
+    private User currentUser;
 
-    public ChatAdapter(Context context, List<Message> messageList) {
+    public ChatAdapter(Context context, List<Message> messageList, User currentUser) {
         this.context = context;
         this.messageList = messageList;
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class ChatAdapter extends BaseAdapter {
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
-        if (messageList.get(position).isSelf()) {
+        if (messageList.get(position).getSender() == currentUser) {
             convertView = mInflater.inflate(R.layout.list_item_message_right, null);
         } else {
             convertView = mInflater.inflate(R.layout.list_item_message_left, null);
@@ -51,7 +53,7 @@ public class ChatAdapter extends BaseAdapter {
         TextView txtMsg = (TextView) convertView.findViewById(R.id.txtMsg);
         TextView lblFrom = (TextView) convertView.findViewById(R.id.lblMsgFrom);
 
-        lblFrom.setText(message.getName());
+        lblFrom.setText(message.getSender().getName());
         txtMsg.setText(message.getMessage());
 
         return convertView;

@@ -1,22 +1,20 @@
 package com.example.android_chat;
 
 public class Message {
-    private String name;
+    private User sender;
     private String message;
-    private boolean isSelf;
 
-    public Message(String name, String message, boolean isSelf) {
-        this.name = name;
+    public Message(User sender, String message) {
+        this.sender = sender;
         this.message = message;
-        this.isSelf = isSelf;
     }
 
-    public String getName() {
-        return name;
+    public User getSender() {
+        return sender;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSender(User sender) {
+        this.sender = sender;
     }
 
     public String getMessage() {
@@ -27,11 +25,4 @@ public class Message {
         this.message = message;
     }
 
-    public boolean isSelf() {
-        return isSelf;
-    }
-
-    public void setSelf(boolean self) {
-        isSelf = self;
-    }
 }
