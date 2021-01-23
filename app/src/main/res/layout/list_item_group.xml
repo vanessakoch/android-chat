@@ -12,9 +12,10 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/contactAvatar"
+            android:id="@+id/groupAvatar"
             android:layout_width="99dp"
             android:layout_height="wrap_content"
+
             android:layout_marginTop="14dp"
             android:src="@mipmap/ic_launcher" />
 
@@ -25,7 +26,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txtName"
+                android:id="@+id/txtGroupName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -34,9 +35,9 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txtPhone"
+                android:id="@+id/txtUser"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:textAlignment="center"
                 android:textColor="@android:color/black" />
 

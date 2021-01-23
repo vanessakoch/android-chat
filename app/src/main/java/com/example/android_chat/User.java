@@ -3,11 +3,14 @@ package com.example.android_chat;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class User implements Serializable {
     private String name;
     private String phone;
+    private List<Group> groupList;
     private List<User> contactsList = new ArrayList<User>();
 
     public User(String name, String phone) {
@@ -33,5 +36,17 @@ public class User implements Serializable {
 
     public List<User> getContactsList() {
         return contactsList;
+    }
+
+    public List<Group> getGroupList() {
+        if (this.groupList == null) {
+            this.groupList = new ArrayList<Group>();
+        }
+        return groupList;
+    }
+
+    @Override
+    public String toString() {
+        return "User= " + name + ", phone='" + phone;
     }
 }

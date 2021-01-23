@@ -13,12 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHolder> {
+public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
     Context context;
     User currentUser;
 
-    public ContactAdapter(Context context, User currentUser) {
+    public GroupAdapter(Context context, User currentUser) {
         this.context = context;
         this.currentUser = currentUser;
     }
@@ -26,16 +28,24 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_contact, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_group, parent, false);
         MyViewHolder holder = new MyViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
-        //holder.contactAvatar.setImageResource(UserDAO.getUsersList().get(position).getContactsList().get(position).getName());
-        holder.txtName.setText(currentUser.getContactsList().get(position).getName());
-        holder.txtPhone.setText(currentUser.getContactsList().get(position).getPhone());
+        String participantsName = "";
+
+        //holder.groupAvatar.setImageResource(UserDAO.getUsersList().get(position).getContactsList().get(position).getName());
+        holder.txtGroupName.setText(currentUser.getGroupList().get(position).getName());
+
+        for(User user : currentUser.getGroupList().get(position).participants) {
+            if(!currentUser.getName().equals(user.getName())) {
+                participantsName += user.getName() + ", ";
+            }
+        }
+        holder.txtUser.setText(participantsName + "você.");
 
         holder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -43,7 +53,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
                 Intent intent = new Intent(context, ChatActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", (Serializable) currentUser);
-                bundle.putSerializable("contact", currentUser.getContactsList().get(holder.getAdapterPosition()));
+                bundle.putInt("position", position);
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
@@ -52,19 +62,19 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return currentUser.getContactsList().size();
+        return currentUser.getGroupList().size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView contactAvatar;
-        TextView txtName;
-        TextView txtPhone;
+        ImageView groupAvatar;
+        TextView txtGroupName;
+        TextView txtUser;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            contactAvatar = (ImageView) itemView.findViewById(R.id.contactAvatar);
-            txtName = (TextView) itemView.findViewById(R.id.txtName);
-            txtPhone = (TextView) itemView.findViewById(R.id.txtPhone);
+            groupAvatar = (ImageView) itemView.findViewById(R.id.groupAvatar);
+            txtGroupName = (TextView) itemView.findViewById(R.id.txtGroupName);
+            txtUser = (TextView) itemView.findViewById(R.id.txtUser);
         }
     }
 

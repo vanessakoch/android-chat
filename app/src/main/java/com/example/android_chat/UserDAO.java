@@ -11,10 +11,12 @@ public class UserDAO {
         User joao = new User("Joao", "47888888888");
         User maria = new User("Maria", "4784554444");
 
+        // Usuários
         usersList.add(vanessa);
         usersList.add(joao);
         usersList.add(maria);
 
+        // Contatos
         vanessa.getContactsList().add(joao);
         vanessa.getContactsList().add(maria);
 
@@ -23,6 +25,18 @@ public class UserDAO {
 
         maria.getContactsList().add(vanessa);
         maria.getContactsList().add(joao);
+
+        // Grupos
+        List<User> participants = new ArrayList<User>();
+        participants.add(joao);
+        participants.add(maria);
+        participants.add(vanessa);
+
+        Group group = new Group("IFSC", participants);
+
+        vanessa.getGroupList().add(group);
+        maria.getGroupList().add(group);
+        joao.getGroupList().add(group);
 
     }
 

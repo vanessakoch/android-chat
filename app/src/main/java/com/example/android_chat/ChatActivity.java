@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -23,16 +24,21 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChatActivity extends Activity {
     private static String QUEUE_NAME = null;
+    private static String EXCHANGE_NAME = null;
     private Button btnSend;
     private EditText inputMsg;
     private ListView listView;
     private ArrayList<Message> messageList;
+    private List<User> group;
     private ChatAdapter adapter;
     private ConnectionFactory factory;
     private User currentUser, contact;
+    private int position;
+    private boolean isGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +56,15 @@ public class ChatActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         currentUser = (User) extras.getSerializable("user");
         contact = (User) extras.getSerializable("contact");
+        position = extras.getInt("position");
 
-        QUEUE_NAME = contact.getName();
+        if(contact != null) {
+            isGroup = false;
+            QUEUE_NAME = contact.getName();
+        } else {
+            isGroup = true;
+            EXCHANGE_NAME = currentUser.getGroupList().get(position).name;
+        }
 
         try {
             initFactory();
@@ -96,10 +109,17 @@ public class ChatActivity extends Activity {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
             String message = inputMsg.getText().toString();
-            channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
-            System.out.println("Mensagem enviada para a fila " + QUEUE_NAME);
+
+            if(!isGroup) {
+                channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+                channel.basicPublish("", QUEUE_NAME, null, message.getBytes("UTF-8"));
+                System.out.println("Mensagem enviada para a fila " + QUEUE_NAME);
+            } else {
+                channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
+                channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+                System.out.println(" Mensagem enviada para o grupo " + EXCHANGE_NAME);
+            }
 
             channel.close();
             connection.close();
@@ -121,12 +141,23 @@ public class ChatActivity extends Activity {
     }
 
     private void getMessage() {
+        String queueName = QUEUE_NAME;
+
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            System.out.println("Aguardando mensagens da fila " + QUEUE_NAME);
+            if(!isGroup) {
+                channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+                System.out.println("Aguardando mensagens da fila " + QUEUE_NAME);
+
+            } else {
+                channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
+                queueName = channel.queueDeclare().getQueue();
+                channel.queueBind(queueName, EXCHANGE_NAME, "");
+                System.out.println(" Aguardando mensagens do tópico " + EXCHANGE_NAME);
+            }
+
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
@@ -136,7 +167,8 @@ public class ChatActivity extends Activity {
                     System.out.println("Mensagem: " + message);
                 }
             };
-            channel.basicConsume(QUEUE_NAME, true, consumer);
+
+            channel.basicConsume(queueName, true, consumer);
         } catch (Exception e) {
             e.printStackTrace();
         }

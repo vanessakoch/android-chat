@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
                     for(User user: UserDAO.getUsersList()) {
                         if(user.getName().equals(name)) {
-                            Intent intent = new Intent(MainActivity.this, ContactActivity.class);
+                            Intent intent = new Intent(MainActivity.this, GroupActivity.class);
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("user", (Serializable) user);
                             intent.putExtras(bundle);
