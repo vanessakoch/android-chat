@@ -1,6 +1,12 @@
-package com.example.android_chat;
+package com.example.android_chat.entities;
 
-public class Message {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Message implements Serializable {
     private User sender;
     private String message;
 
@@ -25,4 +31,11 @@ public class Message {
         this.message = message;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "sender=" + sender +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -1,21 +1,34 @@
-package com.example.android_chat;
+package com.example.android_chat.entities;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class User implements Serializable {
+    private int userAvatar;
     private String name;
     private String phone;
     private List<Group> groupList;
     private List<User> contactsList = new ArrayList<User>();
+    private List<Message> messageList;
+    public static Map<String, List<Message>> chatMessages = new HashMap<String,List<Message>>();
 
-    public User(String name, String phone) {
+    public User(int userAvatar, String name, String phone) {
+        this.userAvatar = userAvatar;
         this.name = name;
         this.phone = phone;
+    }
+
+    public User(){}
+
+    public int getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(int userAvatar) {
+        this.userAvatar = userAvatar;
     }
 
     public String getName() {
@@ -44,6 +57,14 @@ public class User implements Serializable {
         }
         return groupList;
     }
+
+    public List<Message> getMessageList() {
+        if (this.messageList == null) {
+            this.messageList = new ArrayList<Message>();
+        }
+        return messageList;
+    }
+
 
     @Override
     public String toString() {

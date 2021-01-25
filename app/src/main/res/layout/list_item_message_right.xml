@@ -23,11 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="80dp"
         android:background="@drawable/bg_msg_you"
-        android:paddingBottom="5dp"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
         android:paddingTop="5dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="5dp"
         android:textColor="@color/white"
-        android:textSize="16dp" />
+        android:textSize="18sp" />
 
 </LinearLayout>

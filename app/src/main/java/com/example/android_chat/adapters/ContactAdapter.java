@@ -1,4 +1,4 @@
-package com.example.android_chat;
+package com.example.android_chat.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,13 +6,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_chat.R;
+import com.example.android_chat.activities.ChatActivity;
+import com.example.android_chat.activities.MainActivity;
+import com.example.android_chat.entities.User;
+
 import java.io.Serializable;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHolder> {
     Context context;
@@ -33,7 +39,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
-        //holder.contactAvatar.setImageResource(UserDAO.getUsersList().get(position).getContactsList().get(position).getName());
+        holder.contactAvatar.setImageResource(currentUser.getContactsList().get(position).getUserAvatar());
         holder.txtName.setText(currentUser.getContactsList().get(position).getName());
         holder.txtPhone.setText(currentUser.getContactsList().get(position).getPhone());
 
@@ -56,13 +62,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView contactAvatar;
+        CircleImageView contactAvatar;
         TextView txtName;
         TextView txtPhone;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            contactAvatar = (ImageView) itemView.findViewById(R.id.contactAvatar);
+            contactAvatar = (CircleImageView) itemView.findViewById(R.id.contactAvatar);
             txtName = (TextView) itemView.findViewById(R.id.txtName);
             txtPhone = (TextView) itemView.findViewById(R.id.txtPhone);
         }

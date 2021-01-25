@@ -1,16 +1,21 @@
-package com.example.android_chat;
+package com.example.android_chat.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.android_chat.adapters.ChatAdapter;
+import com.example.android_chat.entities.Message;
+import com.example.android_chat.R;
+import com.example.android_chat.entities.User;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
@@ -21,11 +26,13 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends Activity {
     private static String QUEUE_NAME = null;
@@ -38,7 +45,8 @@ public class ChatActivity extends Activity {
     private User currentUser, contact;
     private int position;
     private boolean isGroup;
-    private List<Message> messageList = new ArrayList<Message>();
+    CircleImageView imgAvatar;
+    TextView txtContactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +56,8 @@ public class ChatActivity extends Activity {
         listView = (ListView) findViewById(R.id.list_view);
         btnSend = (ImageButton) findViewById(R.id.btnSend);
         inputMsg = (EditText) findViewById(R.id.inputMsg);
+        txtContactName = (TextView) findViewById(R.id.txtContactName);
+        imgAvatar = (CircleImageView) findViewById(R.id.imgAvatar);
 
         Bundle extras = getIntent().getExtras();
         currentUser = (User) extras.getSerializable("user");
@@ -57,12 +67,17 @@ public class ChatActivity extends Activity {
         if(contact != null) {
             isGroup = false;
             QUEUE_NAME = contact.getName();
+            txtContactName.setText(QUEUE_NAME);
+            imgAvatar.setImageResource(contact.getUserAvatar());
+            adapter = new ChatAdapter(this, currentUser, QUEUE_NAME);
         } else {
             isGroup = true;
-            EXCHANGE_NAME = currentUser.getGroupList().get(position).name;
+            EXCHANGE_NAME = currentUser.getGroupList().get(position).getName();
+            imgAvatar.setImageResource(currentUser.getGroupList().get(position).getGroupAvatar());
+            txtContactName.setText(EXCHANGE_NAME);
+            adapter = new ChatAdapter(this, currentUser, EXCHANGE_NAME);
         }
 
-        adapter = new ChatAdapter(this, messageList, currentUser);
         listView.setAdapter(adapter);
 
         try {
@@ -127,7 +142,12 @@ public class ChatActivity extends Activity {
                 @Override
                 public void run() {
                     playBeep();
-                    messageList.add(new Message(currentUser, message));
+                    currentUser.getMessageList().add(new Message(currentUser, message));
+                    if(!isGroup) {
+                        User.chatMessages.put(QUEUE_NAME, currentUser.getMessageList());
+                    } else {
+                        User.chatMessages.put(EXCHANGE_NAME, currentUser.getMessageList());
+                    }
                     adapter.notifyDataSetChanged();
                     inputMsg.setText("");
                 }
@@ -153,9 +173,8 @@ public class ChatActivity extends Activity {
                 channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.FANOUT);
                 queueName = channel.queueDeclare().getQueue();
                 channel.queueBind(queueName, EXCHANGE_NAME, "");
-                System.out.println(" Aguardando mensagens do tópico " + EXCHANGE_NAME);
+                System.out.println(" Aguardando mensagens do grupo " + EXCHANGE_NAME);
             }
-
 
             Consumer consumer = new DefaultConsumer(channel) {
                 @Override
@@ -167,6 +186,8 @@ public class ChatActivity extends Activity {
             };
 
             channel.basicConsume(queueName, true, consumer);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -180,5 +201,14 @@ public class ChatActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void onClickReturn(View view) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", (Serializable) currentUser);
+        Intent returnIntent = new Intent();
+        returnIntent.putExtras(bundle);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 }

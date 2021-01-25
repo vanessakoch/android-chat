@@ -1,16 +1,26 @@
-package com.example.android_chat;
+package com.example.android_chat.entities;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Group implements Serializable {
-    String name;
-    List<User> participants;
+    private int groupAvatar;
+    private String name;
+    private List<User> participants;
 
-    public Group(String name, List<User> groupList) {
+    public Group(int groupAvatar, String name, List<User> groupList) {
+        this.groupAvatar = groupAvatar;
         this.name = name;
         this.participants = groupList;
+    }
+
+    public int getGroupAvatar() {
+        return groupAvatar;
+    }
+
+    public void setGroupAvatar(int groupAvatar) {
+        this.groupAvatar = groupAvatar;
     }
 
     public String getName() {

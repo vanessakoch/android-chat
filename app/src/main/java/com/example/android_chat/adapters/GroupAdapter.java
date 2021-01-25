@@ -1,4 +1,4 @@
-package com.example.android_chat;
+package com.example.android_chat.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,15 +6,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.android_chat.R;
+import com.example.android_chat.activities.ChatActivity;
+import com.example.android_chat.entities.User;
+
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder> {
     Context context;
@@ -36,11 +39,10 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull final MyViewHolder holder, final int position) {
         String participantsName = "";
-
-        //holder.groupAvatar.setImageResource(UserDAO.getUsersList().get(position).getContactsList().get(position).getName());
+        holder.groupAvatar.setImageResource(currentUser.getGroupList().get(position).getGroupAvatar());
         holder.txtGroupName.setText(currentUser.getGroupList().get(position).getName());
 
-        for(User user : currentUser.getGroupList().get(position).participants) {
+        for(User user : currentUser.getGroupList().get(position).getParticipants()) {
             if(!currentUser.getName().equals(user.getName())) {
                 participantsName += user.getName() + ", ";
             }
@@ -66,13 +68,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.MyViewHolder
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        ImageView groupAvatar;
+        CircleImageView groupAvatar;
         TextView txtGroupName;
         TextView txtUser;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            groupAvatar = (ImageView) itemView.findViewById(R.id.groupAvatar);
+            groupAvatar = (CircleImageView) itemView.findViewById(R.id.groupAvatar);
             txtGroupName = (TextView) itemView.findViewById(R.id.txtGroupName);
             txtUser = (TextView) itemView.findViewById(R.id.txtUser);
         }
