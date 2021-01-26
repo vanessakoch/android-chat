@@ -19,16 +19,26 @@ public class ChatAdapter extends BaseAdapter {
     private Context context;
     private User currentUser;
     private String queue;
+    private boolean isGroup;
 
-    public ChatAdapter(Context context, User currentUser, String queue) {
+    public ChatAdapter(Context context, User currentUser, String queue, boolean isGroup) {
         this.context = context;
         this.currentUser = currentUser;
-        this.queue = queue;
+        this.isGroup = isGroup;
+
+        if(!isGroup) {
+            this.queue = queue+currentUser.getName();
+            if(User.chatMessages.get(this.queue) == null) {
+                this.queue = currentUser.getName()+queue;
+            }
+        } else {
+            this.queue = queue;
+        }
     }
 
     @Override
     public int getCount() {
-        if(User.chatMessages != null && User.chatMessages.get(queue) != null)
+        if(User.chatMessages.get(queue) != null)
             return User.chatMessages.get(queue).size();
         return 0;
     }

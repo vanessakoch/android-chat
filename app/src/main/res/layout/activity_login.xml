@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/bg_btn_join"
     android:orientation="vertical">
 
     <ImageView
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:background="@color/bg_btn_join"
+            android:background="#4CAF50"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:text="Entrar"

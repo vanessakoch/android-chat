@@ -13,6 +13,7 @@ public class User implements Serializable {
     private List<Group> groupList;
     private List<User> contactsList = new ArrayList<User>();
     private List<Message> messageList;
+    private List<Message> groupMessageList;
     public static Map<String, List<Message>> chatMessages = new HashMap<String,List<Message>>();
 
     public User(int userAvatar, String name, String phone) {
@@ -64,6 +65,7 @@ public class User implements Serializable {
         }
         return messageList;
     }
+
 
 
     @Override

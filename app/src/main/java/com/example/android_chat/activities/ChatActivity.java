@@ -30,6 +30,9 @@ import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -69,13 +72,13 @@ public class ChatActivity extends Activity {
             QUEUE_NAME = contact.getName();
             txtContactName.setText(QUEUE_NAME);
             imgAvatar.setImageResource(contact.getUserAvatar());
-            adapter = new ChatAdapter(this, currentUser, QUEUE_NAME);
+            adapter = new ChatAdapter(this, currentUser, QUEUE_NAME, isGroup);
         } else {
             isGroup = true;
             EXCHANGE_NAME = currentUser.getGroupList().get(position).getName();
             imgAvatar.setImageResource(currentUser.getGroupList().get(position).getGroupAvatar());
             txtContactName.setText(EXCHANGE_NAME);
-            adapter = new ChatAdapter(this, currentUser, EXCHANGE_NAME);
+            adapter = new ChatAdapter(this, currentUser, EXCHANGE_NAME, isGroup);
         }
 
         listView.setAdapter(adapter);
@@ -137,22 +140,6 @@ public class ChatActivity extends Activity {
             channel.close();
             connection.close();
 
-            // tive que fazer essa função porque somente a thread principal que gerou a view pode mudar ela
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    playBeep();
-                    currentUser.getMessageList().add(new Message(currentUser, message));
-                    if(!isGroup) {
-                        User.chatMessages.put(QUEUE_NAME, currentUser.getMessageList());
-                    } else {
-                        User.chatMessages.put(EXCHANGE_NAME, currentUser.getMessageList());
-                    }
-                    adapter.notifyDataSetChanged();
-                    inputMsg.setText("");
-                }
-            });
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,6 +151,7 @@ public class ChatActivity extends Activity {
         try {
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
+            String[] message = {""};
 
             if(!isGroup) {
                 channel.queueDeclare(QUEUE_NAME, false, false, false, null);
@@ -180,17 +168,52 @@ public class ChatActivity extends Activity {
                 @Override
                 public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
                                            byte[] body) throws IOException {
-                    String message = new String(body, "UTF-8");
-                    System.out.println("Mensagem: " + message);
+                    message[0] = new String(body, "UTF-8");
+                    System.out.println("Mensagem: " + message[0]);
+
+                        updateMapUI(message[0]);
+
                 }
             };
 
             channel.basicConsume(queueName, true, consumer);
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateMapUI(String message) {
+
+        // Verificando se é grupo ou individual e se o chat já existe no map
+        if (!isGroup) {
+            if (User.chatMessages.get(QUEUE_NAME + currentUser.getName()) == null) {
+                if (User.chatMessages.get(currentUser.getName() + QUEUE_NAME) == null) {
+                    currentUser.getMessageList().add(new Message(currentUser, message));
+                    User.chatMessages.put(currentUser.getName() + QUEUE_NAME, currentUser.getMessageList());
+                } else {
+                    User.chatMessages.get(currentUser.getName() + QUEUE_NAME).add(new Message(currentUser, message));
+                }
+            } else {
+                User.chatMessages.get(QUEUE_NAME + currentUser.getName()).add(new Message(currentUser, message));
+            }
+        } else {
+            if (User.chatMessages.get(EXCHANGE_NAME) == null) {
+                currentUser.getMessageList().add(new Message(currentUser, message));
+                User.chatMessages.put(EXCHANGE_NAME, currentUser.getMessageList());
+            } else {
+                User.chatMessages.get(EXCHANGE_NAME).add(new Message(currentUser, message));
+            }
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                playBeep();
+                adapter.notifyDataSetChanged();
+                inputMsg.setText("");
+            }
+        });
     }
 
     public void playBeep() {
@@ -211,4 +234,5 @@ public class ChatActivity extends Activity {
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
+
 }
