@@ -49,11 +49,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:background="#4CAF50"
+            android:backgroundTint="@color/white"
             android:paddingLeft="25dp"
             android:paddingRight="25dp"
             android:text="Entrar"
-            android:textColor="@color/white" />
+            android:textColor="@color/bg_btn_join"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout

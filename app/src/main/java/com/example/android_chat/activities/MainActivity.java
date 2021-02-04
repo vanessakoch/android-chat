@@ -22,9 +22,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private Button btnSignIn;
     private EditText txtName;
-    private User currentUser;
-    public static final int MENU_VIEW = 1;
-    public static final int CHAT_VIEW = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
                                     "Seja bem vindo(a) " + user.getName(), Toast.LENGTH_SHORT).show();
                         }
                     }
-                    Toast.makeText(getApplicationContext(),
-                            "Este contato não existe", Toast.LENGTH_LONG).show();
-
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Por favor, insira seu nome para entrar", Toast.LENGTH_LONG).show();
@@ -67,14 +61,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == MENU_VIEW){
-            if(resultCode == Activity.RESULT_OK){
-                Bundle bundle = data.getExtras();
-                currentUser = (User) bundle.getSerializable("user");
-            }
-        }
-    }
+
 }

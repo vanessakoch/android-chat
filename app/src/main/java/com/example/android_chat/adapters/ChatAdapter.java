@@ -13,6 +13,8 @@ import com.example.android_chat.R;
 import com.example.android_chat.entities.User;
 
 import java.util.List;
+import java.util.Map;
+
 
 public class ChatAdapter extends BaseAdapter {
 
@@ -74,6 +76,11 @@ public class ChatAdapter extends BaseAdapter {
         lblFrom.setText(message.getSender().getName());
         txtMsg.setText(message.getMessage());
 
+
         return convertView;
+    }
+
+    public void insertItem() {
+        notifyDataSetChanged();
     }
 }

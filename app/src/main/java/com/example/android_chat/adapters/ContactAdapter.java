@@ -12,8 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android_chat.R;
-import com.example.android_chat.activities.ChatActivity;
-import com.example.android_chat.activities.MainActivity;
+import com.example.android_chat.activities.ChatIndividualActivity;
 import com.example.android_chat.entities.User;
 
 import java.io.Serializable;
@@ -46,7 +45,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.MyViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ChatActivity.class);
+                Intent intent = new Intent(context, ChatIndividualActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("user", (Serializable) currentUser);
                 bundle.putSerializable("contact", currentUser.getContactsList().get(holder.getAdapterPosition()));
